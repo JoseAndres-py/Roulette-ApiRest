@@ -27,7 +27,7 @@ namespace Roulette_ApiRest.Controllers
         public IEnumerable<string> Get()
         {
             
-            bool status = db.GetUsersData(1);
+            var status = db.CreateRoulette();
             return new string[] { "value1", "value2" };
         }
 

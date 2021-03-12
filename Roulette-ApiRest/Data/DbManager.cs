@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Roulette_ApiRest.Data.Entities;
 
 namespace Roulette_ApiRest.Data
 {
@@ -58,7 +59,34 @@ namespace Roulette_ApiRest.Data
 
         }
 
-        public void CreateRoulette() { 
+        public int CreateRoulette() {
+
+            int id_roulette = 0;
+            command.CommandText = "INSERT INTO roulettes (id_crupier, open_date, state) OUTPUT Inserted.id VALUES(@id_crupier, GETDATE(), CONVERT(bit, 1)); ";
+            command.Parameters.Add("@id_crupier", SqlDbType.Int).Value = 1;
+            try
+            {
+                connection.Open();
+                var reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        id_roulette = Convert.ToInt32(reader["id"]);
+                    }
+                }
+            }
+            catch(Exception error)
+            {
+                throw new Exception("An error occurred when adding the roulette wheel to the database");
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return id_roulette;
+            
         }
 
         public IConfigurationRoot GetConfiguration()
