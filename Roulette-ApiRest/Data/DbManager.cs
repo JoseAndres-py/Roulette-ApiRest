@@ -18,20 +18,23 @@ namespace Roulette_ApiRest.Data
 
         public DbManager()
         {
+            //Configuration Settings
             _configuration = GetConfiguration();
+            //Data Base Conection
             connection = new SqlConnection();
             connection.ConnectionString = _configuration.GetConnectionString("ConnectionString");
             command = new SqlCommand();
             command.Connection = connection;
             command.CommandType = CommandType.Text;
-        } // constructor
+        } // Constructor
 
         public bool GetUsersData(int id)
         {
             bool returnvalue = false;
-                command.CommandText = "select * from Users where id=@id";
-                command.Parameters.Add("@id", SqlDbType.Int).Value = id;
-            try{
+            command.CommandText = "select * from gamblers where id=@id";
+            command.Parameters.Add("@id", SqlDbType.Int).Value = id;
+            try
+            {
                 connection.Open();
                 var reader = command.ExecuteReader();
                 if (reader.HasRows)
@@ -43,14 +46,19 @@ namespace Roulette_ApiRest.Data
                 }
                 returnvalue = true;
             }
-            catch{ 
+            catch
+            {
             }
-            finally{
+            finally
+            {
                 connection.Close();
             }
 
             return returnvalue;
 
+        }
+
+        public void CreateRoulette() { 
         }
 
         public IConfigurationRoot GetConfiguration()
