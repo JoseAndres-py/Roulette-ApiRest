@@ -15,18 +15,12 @@ namespace Roulette_ApiRest.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
-    {
-        DbManager db;
-        public ValuesController()
-        {
-            db= new DbManager();
-        }
-
+    { 
         // GET: api/<ValuesController>
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            
+            DbManager db = new DbManager(); ;
             var status = db.CreateRoulette();
             return new string[] { "value1", "value2" };
         }
