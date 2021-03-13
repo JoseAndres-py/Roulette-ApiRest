@@ -57,26 +57,18 @@ namespace Roulette_ApiRest.Data
 
         }
 
-        public int CreateRoulette() {
+        public int CreateRoulette(string access_key) {
 
-            int id_roulette = -1;
+            int idCrupier = getCrupierId(access_key);
             command.CommandText = "INSERT INTO roulettes (id_crupier, open_date, state) OUTPUT Inserted.id VALUES(@id_crupier, GETDATE(), CONVERT(bit, 1)); ";
-            command.Parameters.Add("@id_crupier", SqlDbType.Int).Value = getCrupierId();
+            command.Parameters.Add("@id_crupier", SqlDbType.Int).Value = idCrupier;
             try
             {
-                connection.Open();
-                var reader = command.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        id_roulette = Convert.ToInt32(reader["id"]);
-                    }
-                }
+                List<Roulette> newRuolette = Query<Roulette>();
 
-                return id_roulette;
+                return newRuolette[0].id;
             }
-            catch(Exception error)
+            catch
             {
                 throw new Exception("An error occurred when adding the roulette to the database");
             }
@@ -84,44 +76,35 @@ namespace Roulette_ApiRest.Data
             {
                 connection.Close();
             }
-            
         }
 
 
-        public int getCrupierId()
+        public int getCrupierId(string access_key)
         {
-            int id_crupier = -1;
             command.CommandText = "SELECT * FROM crupiers WHERE access_key = @access_key; ";
-            command.Parameters.Add("@access_key", SqlDbType.VarChar).Value = "93d36591-b06b-47c8-99c0-105aa73502f";
-
+            command.Parameters.Add("@access_key", SqlDbType.VarChar).Value = access_key;
+            List<Crupier> crupiersResult = new List<Crupier>();
             try
             {
-                connection.Open();
-                var reader = command.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        id_crupier = Convert.ToInt32(reader["id"]);
-                    }
-                }
-                return id_crupier;
+                crupiersResult = Query<Crupier>();
             }
-            catch (Exception error)
+            catch
             {
                 throw new Exception("An error occurred while finding the crupier");
             }
-            finally
+            finally 
             {
-                connection.Close();
+                if (!crupiersResult.Any())
+                {
+                    throw new Exception("Croupier not found with the specified access key");
+                }
             }
+            return crupiersResult[0].id;
         }
 
         public List<obj> Query<obj>() where obj : new()
         {
             List<obj> response = new List<obj>();
-            command.CommandText = "SELECT * FROM crupiers WHERE access_key = @access_key; ";
-            command.Parameters.Add("@access_key", SqlDbType.VarChar).Value = "93d36591-b06b-47c8-99c0-105aa735025f";
             try
             {
                 connection.Open();
@@ -133,7 +116,6 @@ namespace Roulette_ApiRest.Data
                     for (int inc = 0; inc < reader.FieldCount; inc++)
                     {
                         Type type = Object.GetType();
-                        var prueba = reader.GetName(inc);
                         PropertyInfo prop = type.GetProperty(reader.GetName(inc));
                         prop.SetValue(Object, Convert.ChangeType(reader.GetValue(inc), prop.PropertyType), null);
                     }
@@ -147,7 +129,6 @@ namespace Roulette_ApiRest.Data
             {
                 connection.Close();
             }
-
         }
 
         public IConfigurationRoot GetConfiguration()
