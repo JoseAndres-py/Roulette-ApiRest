@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Roulette_ApiRest.Data;
 using Microsoft.Extensions.Configuration;
+using Roulette_ApiRest.Data.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,8 +21,9 @@ namespace Roulette_ApiRest.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            DbManager db = new DbManager(); ;
-            var status = db.CreateRoulette();
+            DbManager db = new DbManager();
+            //db.getCrupierId();
+            db.Query<Roulette>();
             return new string[] { "value1", "value2" };
         }
 
