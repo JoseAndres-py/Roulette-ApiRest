@@ -13,7 +13,7 @@ namespace Roulette_ApiRest.Data
     public class DbManager
     {
         private SqlConnection connection;
-        private SqlCommand command;
+        public SqlCommand command;
         private readonly IConfiguration _configuration;
 
 
@@ -57,80 +57,7 @@ namespace Roulette_ApiRest.Data
 
         }
 
-        public int CreateRoulette(string access_key)
-        {
-
-            int idCrupier = getCrupierId(access_key);
-            command.CommandText = "INSERT INTO roulettes (id_crupier, open_date, state) OUTPUT Inserted.id VALUES(@id_crupier, GETDATE(), CONVERT(bit, 1)); ";
-            command.Parameters.Clear();
-            command.Parameters.Add("@id_crupier", SqlDbType.Int).Value = idCrupier;
-            try
-            {
-                Roulette newRoulette = Query<Roulette>()[0];
-
-                return newRoulette.id;
-            }
-            catch
-            {
-                throw new Exception("An error occurred when adding the roulette to the database");
-            }
-        }
-
-        public void OpenRoulette(int roulette_id, string access_key)
-        {
-
-            int idCrupier = getCrupierId(access_key);
-
-            Roulette Roulette = getRoulette(roulette_id);
-            if (Roulette.id_crupier != idCrupier)
-            {
-                throw new Exception("The operation could not be performed because the croupier is not assigned to this roulette");
-            }
-            else if (Roulette.state)
-            {
-                throw new Exception("The operation could not be performed because the roulette is already open");
-            }
-            else
-            {
-                updateRouletteStatus(roulette_id, true);
-            }
-        }
-
-        public void AddBet(string access_key, Bet Bet)
-        {
-            Gambler Gambler = getGambler(access_key);
-            Roulette Roulette = getRoulette(Bet.id_roulette);
-            if (Bet.money_bet > Gambler.credit) 
-            { 
-                throw new Exception("The operation could not be performed because the bambler has insufficient credit");
-            }
-            else
-            {
-                addBet(Gambler, Roulette, Bet);
-            }
-        }
-
-        public void CloseRoulette(int roulette_id, string access_key)
-        {
-
-            int idCrupier = getCrupierId(access_key);
-
-            Roulette Roulette = getRoulette(roulette_id);
-            if (Roulette.id_crupier != idCrupier)
-            {
-                throw new Exception("The operation could not be performed because the croupier is not assigned to this roulette");
-            }
-            else if (!Roulette.state)
-            {
-                throw new Exception("The operation could not be performed because the roulette is already closed");
-            }
-            else
-            {
-                updateRouletteStatus(roulette_id, false);
-            }
-        }
-
-        public int getCrupierId(string access_key)
+        public Crupier getCrupierId(string access_key)
         {
             command.CommandText = "SELECT * FROM crupiers WHERE access_key = @access_key; ";
             command.Parameters.Clear();
@@ -151,7 +78,8 @@ namespace Roulette_ApiRest.Data
                     throw new Exception("Crupier not found with the specified access key");
                 }
             }
-            return crupiersResult[0].id;
+
+            return crupiersResult[0];
         }
 
         public Gambler getGambler(string access_key)
@@ -202,6 +130,30 @@ namespace Roulette_ApiRest.Data
             return roulettesResult[0];
         }
 
+        public Bet getBet(int id)
+        {
+            command.CommandText = "SELECT * FROM bets WHERE id = @id; ";
+            command.Parameters.Clear();
+            command.Parameters.Add("@id", SqlDbType.Int).Value = id;
+            List<Bet> roulettesResult = new List<Bet>();
+            try
+            {
+                roulettesResult = Query<Bet>();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while finding the roulette in DB");
+            }
+            finally
+            {
+                if (!roulettesResult.Any())
+                {
+                    throw new Exception("Roulete not found with the specified id");
+                }
+            }
+            return roulettesResult[0];
+        }
+
         public void updateRouletteStatus(int roulette_id, bool state)
         {
             command.CommandText = "UPDATE roulettes SET state = CONVERT(bit,@state), open_date = CASE WHEN 1 = CONVERT(bit,'True') THEN GETDATE() ELSE open_date END, close_date = CASE WHEN 1 = CONVERT(bit,'False') THEN GETDATE()  ELSE NULL END WHERE id = @id;";
@@ -224,6 +176,23 @@ namespace Roulette_ApiRest.Data
 
         }
 
+        public Roulette addRoulette(int crupier_id)
+        {
+            command.CommandText = "INSERT INTO roulettes (id_crupier, open_date, state) OUTPUT Inserted.id VALUES(@id_crupier, GETDATE(), CONVERT(bit, 1)); ";
+            command.Parameters.Clear();
+            command.Parameters.Add("@id_crupier", SqlDbType.Int).Value = crupier_id;
+            try
+            {
+                Roulette newRoulette = Query<Roulette>()[0];
+
+                return newRoulette;
+            }
+            catch
+            {
+                throw new Exception("An error occurred when adding the roulette to the database");
+            }
+        }
+
         public void addBet(Gambler gambler, Roulette roulette, Bet bet)
         {
             command.CommandText = "INSERT INTO bets ([id_roulette], [id_gambler], [number], [color], [money_bet], [date_bet])  OUTPUT Inserted.id VALUES(@id_roulette, @id_gambler, @number, @color, @money, GETDATE());";
@@ -231,7 +200,7 @@ namespace Roulette_ApiRest.Data
             command.Parameters.Add("@id_roulette", SqlDbType.Int).Value = roulette.id;
             command.Parameters.Add("@id_gambler", SqlDbType.Int).Value = gambler.id;
             command.Parameters.Add("@number", SqlDbType.Int).Value = bet.number;
-            command.Parameters.Add("@color", SqlDbType.NVarChar).Value = bet.color;
+            command.Parameters.Add("@color", SqlDbType.NVarChar).Value = (int)bet.color;
             command.Parameters.Add("@money", SqlDbType.Int).Value = bet.money_bet;
             try
             {
@@ -260,8 +229,11 @@ namespace Roulette_ApiRest.Data
                         object valueDB = reader.GetValue(inc);
                         if (valueDB != DBNull.Value)
                         {
-                            Type type = Object.GetType(); ;
+                            Type type = Object.GetType();
                             PropertyInfo prop = type.GetProperty(reader.GetName(inc));
+                            // Cast Enum Values Data Base
+                            if (prop.PropertyType.IsEnum)
+                                valueDB = Enum.ToObject(prop.PropertyType, valueDB);
                             prop.SetValue(Object, Convert.ChangeType(valueDB, prop.PropertyType), null);
                         }
                     }

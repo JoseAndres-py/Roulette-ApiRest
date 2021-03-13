@@ -11,9 +11,9 @@ namespace Roulette_ApiRest.Data.Entities
         public int id { get; set; }
         public int id_crupier { get; set; }
         public DateTime open_date { get; set; }
-        public DateTime close_date { get; set; }
-        public int number_winner { get; set; }
-        public string color_winner { get; set; }
+        public DateTime? close_date { get; set; }
+        public int? number_winner { get; set; }
+        public string? color_winner { get; set; }
         public bool state { get; set; }
     }
 }

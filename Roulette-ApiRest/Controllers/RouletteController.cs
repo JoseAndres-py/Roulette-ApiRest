@@ -24,8 +24,8 @@ namespace Roulette_ApiRest.Controllers
         [HttpPost("create")]
         public string Create()
         {
-            DbManager db = new DbManager();
-            int idRoulette = db.CreateRoulette("93d36591-b06b-47c8-99c0-105aa735025f");
+            RouletteManager rm = new RouletteManager(); ;
+            int idRoulette = rm.CreateRoulette("93d36591-b06b-47c8-99c0-105aa735025f");
             return Convert.ToString(idRoulette);
         }
     }
