@@ -22,7 +22,8 @@ namespace Roulette_ApiRest.Controllers
         public IEnumerable<string> Get()
         {
             DbManager db = new DbManager();
-            db.getCrupierId("93d36591-b06b-47c8-99c0-105aa735025f");
+            //db.getCrupierId("93d36591-b06b-47c8-99c0-105aa735025f");
+            db.OpenRoulette(1, "93d36591-b06b-47c8-99c0-105aa735025f");
             return new string[] { "value1", "value2" };
         }
 
