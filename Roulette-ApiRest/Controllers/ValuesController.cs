@@ -23,7 +23,13 @@ namespace Roulette_ApiRest.Controllers
         {
             DbManager db = new DbManager();
             //db.getCrupierId("93d36591-b06b-47c8-99c0-105aa735025f");
-            db.OpenRoulette(1, "93d36591-b06b-47c8-99c0-105aa735025f");
+            //db.CloseRoulette(3, "93d36591-b06b-47c8-99c0-105aa735025f");
+            Bet bet = new Bet();
+            bet.id_roulette = 1;
+            bet.number = 17;
+            bet.color = "Black";
+            bet.money_bet = 100;
+            db.AddBet("60d71bfa-63f9-4b07-85e9-e9b22d828efe", bet);
             return new string[] { "value1", "value2" };
         }
 

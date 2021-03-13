@@ -1,12 +1,11 @@
-﻿using System;
-using System.Data.SqlClient;
-using System.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using System.IO;
+﻿using Microsoft.Extensions.Configuration;
 using Roulette_ApiRest.Data.Entities;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Roulette_ApiRest.Data
@@ -58,7 +57,8 @@ namespace Roulette_ApiRest.Data
 
         }
 
-        public int CreateRoulette(string access_key) {
+        public int CreateRoulette(string access_key)
+        {
 
             int idCrupier = getCrupierId(access_key);
             command.CommandText = "INSERT INTO roulettes (id_crupier, open_date, state) OUTPUT Inserted.id VALUES(@id_crupier, GETDATE(), CONVERT(bit, 1)); ";
@@ -66,9 +66,9 @@ namespace Roulette_ApiRest.Data
             command.Parameters.Add("@id_crupier", SqlDbType.Int).Value = idCrupier;
             try
             {
-               Roulette newRoulette = Query<Roulette>()[0];
+                Roulette newRoulette = Query<Roulette>()[0];
 
-               return newRoulette.id;
+                return newRoulette.id;
             }
             catch
             {
@@ -76,11 +76,11 @@ namespace Roulette_ApiRest.Data
             }
         }
 
-        public void OpenRoulette(int roulette_id, string access_key) 
+        public void OpenRoulette(int roulette_id, string access_key)
         {
-            
+
             int idCrupier = getCrupierId(access_key);
-            
+
             Roulette Roulette = getRoulette(roulette_id);
             if (Roulette.id_crupier != idCrupier)
             {
@@ -90,9 +90,23 @@ namespace Roulette_ApiRest.Data
             {
                 throw new Exception("The operation could not be performed because the roulette is already open");
             }
-            else 
+            else
             {
                 updateRouletteStatus(roulette_id, true);
+            }
+        }
+
+        public void AddBet(string access_key, Bet Bet)
+        {
+            Gambler Gambler = getGambler(access_key);
+            Roulette Roulette = getRoulette(Bet.id_roulette);
+            if (Bet.money_bet > Gambler.credit) 
+            { 
+                throw new Exception("The operation could not be performed because the bambler has insufficient credit");
+            }
+            else
+            {
+                addBet(Gambler, Roulette, Bet);
             }
         }
 
@@ -106,7 +120,7 @@ namespace Roulette_ApiRest.Data
             {
                 throw new Exception("The operation could not be performed because the croupier is not assigned to this roulette");
             }
-            else if (Roulette.state)
+            else if (!Roulette.state)
             {
                 throw new Exception("The operation could not be performed because the roulette is already closed");
             }
@@ -130,14 +144,38 @@ namespace Roulette_ApiRest.Data
             {
                 throw new Exception("An error occurred while finding the crupier in DB");
             }
-            finally 
+            finally
             {
                 if (!crupiersResult.Any())
                 {
-                    throw new Exception("Croupier not found with the specified access key");
+                    throw new Exception("Crupier not found with the specified access key");
                 }
             }
             return crupiersResult[0].id;
+        }
+
+        public Gambler getGambler(string access_key)
+        {
+            command.CommandText = "SELECT * FROM gamblers WHERE access_key = @access_key; ";
+            command.Parameters.Clear();
+            command.Parameters.Add("@access_key", SqlDbType.VarChar).Value = access_key;
+            List<Gambler> gamblersResult = new List<Gambler>();
+            try
+            {
+                gamblersResult = Query<Gambler>();
+            }
+            catch
+            {
+                throw new Exception("An error occurred while finding the gambler in DB");
+            }
+            finally
+            {
+                if (!gamblersResult.Any())
+                {
+                    throw new Exception("Gambler not found with the specified access key");
+                }
+            }
+            return gamblersResult[0];
         }
 
         public Roulette getRoulette(int id)
@@ -150,7 +188,7 @@ namespace Roulette_ApiRest.Data
             {
                 roulettesResult = Query<Roulette>();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("An error occurred while finding the roulette in DB");
             }
@@ -166,7 +204,7 @@ namespace Roulette_ApiRest.Data
 
         public void updateRouletteStatus(int roulette_id, bool state)
         {
-            command.CommandText = "UPDATE roulettes SET state = CONVERT(bit,@state) WHERE id = @id;";
+            command.CommandText = "UPDATE roulettes SET state = CONVERT(bit,@state), open_date = CASE WHEN 1 = CONVERT(bit,'True') THEN GETDATE() ELSE open_date END, close_date = CASE WHEN 1 = CONVERT(bit,'False') THEN GETDATE()  ELSE NULL END WHERE id = @id;";
             command.Parameters.Clear();
             command.Parameters.Add("@id", SqlDbType.Int).Value = roulette_id;
             command.Parameters.Add("@state", SqlDbType.Bit).Value = state;
@@ -175,7 +213,7 @@ namespace Roulette_ApiRest.Data
                 connection.Open();
                 command.ExecuteReader();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("An error occurred while updating the roulette status");
             }
@@ -186,13 +224,33 @@ namespace Roulette_ApiRest.Data
 
         }
 
+        public void addBet(Gambler gambler, Roulette roulette, Bet bet)
+        {
+            command.CommandText = "INSERT INTO bets ([id_roulette], [id_gambler], [number], [color], [money_bet], [date_bet])  OUTPUT Inserted.id VALUES(@id_roulette, @id_gambler, @number, @color, @money, GETDATE());";
+            command.Parameters.Clear();
+            command.Parameters.Add("@id_roulette", SqlDbType.Int).Value = roulette.id;
+            command.Parameters.Add("@id_gambler", SqlDbType.Int).Value = gambler.id;
+            command.Parameters.Add("@number", SqlDbType.Int).Value = bet.number;
+            command.Parameters.Add("@color", SqlDbType.NVarChar).Value = bet.color;
+            command.Parameters.Add("@money", SqlDbType.Int).Value = bet.money_bet;
+            try
+            {
+                connection.Open();
+                command.ExecuteReader();
+            }
+            catch
+            {
+                throw new Exception("An error occurred when adding the bet to the database");
+            }
+        }
+
         public List<obj> Query<obj>() where obj : new()
         {
             List<obj> response = new List<obj>();
             try
             {
                 connection.Open();
-                var reader = command.ExecuteReader(); 
+                var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     obj Object = new obj();
@@ -200,8 +258,9 @@ namespace Roulette_ApiRest.Data
                     for (int inc = 0; inc < reader.FieldCount; inc++)
                     {
                         object valueDB = reader.GetValue(inc);
-                        if (valueDB != DBNull.Value) { 
-                            Type type = Object.GetType();;
+                        if (valueDB != DBNull.Value)
+                        {
+                            Type type = Object.GetType(); ;
                             PropertyInfo prop = type.GetProperty(reader.GetName(inc));
                             prop.SetValue(Object, Convert.ChangeType(valueDB, prop.PropertyType), null);
                         }
