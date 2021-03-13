@@ -93,6 +93,7 @@ namespace Roulette_ApiRest.Data
             int id_crupier = -1;
             command.CommandText = "SELECT * FROM crupiers WHERE access_key = @access_key; ";
             command.Parameters.Add("@access_key", SqlDbType.VarChar).Value = "93d36591-b06b-47c8-99c0-105aa73502f";
+
             try
             {
                 connection.Open();
@@ -118,28 +119,34 @@ namespace Roulette_ApiRest.Data
 
         public List<obj> Query<obj>() where obj : new()
         {
-            List<obj> res = new List<obj>();
+            List<obj> response = new List<obj>();
             command.CommandText = "SELECT * FROM crupiers WHERE access_key = @access_key; ";
             command.Parameters.Add("@access_key", SqlDbType.VarChar).Value = "93d36591-b06b-47c8-99c0-105aa735025f";
-            connection.Open();
-            var reader = command.ExecuteReader(); 
-            while (reader.Read())
+            try
             {
-                obj Object = new obj();
-
-                for (int inc = 0; inc < reader.FieldCount; inc++)
+                connection.Open();
+                var reader = command.ExecuteReader(); 
+                while (reader.Read())
                 {
-                    Type type = Object.GetType();
-                    var prueba = reader.GetName(inc);
-                    PropertyInfo prop = type.GetProperty(reader.GetName(inc));
-                    prop.SetValue(Object, reader.GetValue(inc), null);
+                    obj Object = new obj();
+
+                    for (int inc = 0; inc < reader.FieldCount; inc++)
+                    {
+                        Type type = Object.GetType();
+                        var prueba = reader.GetName(inc);
+                        PropertyInfo prop = type.GetProperty(reader.GetName(inc));
+                        prop.SetValue(Object, Convert.ChangeType(reader.GetValue(inc), prop.PropertyType), null);
+                    }
+
+                    response.Add(Object);
                 }
 
-                res.Add(Object);
+                return response;
             }
-            connection.Close();
-
-            return res;
+            finally
+            {
+                connection.Close();
+            }
 
         }
 

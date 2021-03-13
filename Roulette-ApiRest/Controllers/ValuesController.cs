@@ -22,8 +22,7 @@ namespace Roulette_ApiRest.Controllers
         public IEnumerable<string> Get()
         {
             DbManager db = new DbManager();
-            //db.getCrupierId();
-            db.Query<Roulette>();
+            db.getCrupierId();
             return new string[] { "value1", "value2" };
         }
 
