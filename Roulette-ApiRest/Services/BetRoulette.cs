@@ -84,7 +84,7 @@ namespace Roulette_ApiRest.Data
             }
         }
 
-        public void CloseRoulette(int roulette_id, string access_key)
+        public List<Bet> CloseRoulette(int roulette_id, string access_key)
         {
             Crupier crupier = users_db.getCrupierByAccessKey(access_key: access_key);
             Roulette Roulette = rouletes_db.getRouletteById(id: roulette_id);
@@ -98,9 +98,10 @@ namespace Roulette_ApiRest.Data
             }
             else
             {
-                rouletes_db.updateRouletteStatus(roulette_id: Roulette.id, state: false);
+                //rouletes_db.updateRouletteStatus(roulette_id: Roulette.id, state: false);
                 Roulette.close_date = DateTime.Now;
-                updateResultsBets(Roulette: Roulette);
+                //updateResultsBets(Roulette: Roulette);
+                return bets_db.getBetsByRoulette(Roulette);
             }
         }
 

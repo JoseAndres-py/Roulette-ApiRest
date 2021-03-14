@@ -70,8 +70,8 @@ namespace Roulette_ApiRest.Data
                     // Nullable Data Type
                     Type propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
                     // Cast Enum Values Data Base
-                    if (prop.PropertyType.IsEnum)
-                        valueDB = Enum.ToObject(enumType:prop.PropertyType, value:valueDB);
+                    if (propType.IsEnum)
+                        valueDB = Enum.ToObject(enumType: propType, value:valueDB);
                     prop.SetValue(Object, Convert.ChangeType(value:valueDB, conversionType:propType), null);
                 }
             }

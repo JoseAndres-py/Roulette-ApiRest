@@ -15,6 +15,25 @@ namespace Roulette_ApiRest.Data
         {
         }
 
+        public List<Bet> getBetsByRoulette(Roulette roulette)
+        {
+            command.CommandText = "SELECT * FROM bets WHERE id_roulette = @id_roulette AND date_bet BETWEEN @open_date AND @close_date";
+            command.Parameters.Clear();
+            command.Parameters.Add(parameterName: "@id_roulette", sqlDbType: SqlDbType.Int).Value = roulette.id;
+            command.Parameters.Add(parameterName: "@open_date", sqlDbType: SqlDbType.DateTime).Value = roulette.open_date;
+            command.Parameters.Add(parameterName: "@close_date", sqlDbType: SqlDbType.DateTime).Value = roulette.close_date;
+            List<Bet> betsResult;
+            try
+            {
+                betsResult = Query<Bet>();
+            }
+            catch(Exception EX)
+            {
+                throw new Exception("An error occurred while finding the bets in DB");
+            }
+            return betsResult;
+        }
+
         public Bet getBetById(int id)
         {
             command.CommandText = "SELECT * FROM bets WHERE id = @id; ";

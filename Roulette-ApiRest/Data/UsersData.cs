@@ -13,6 +13,7 @@ namespace Roulette_ApiRest.Data
         public UsersData(string connection_name) : base(connection_name)
         {
         }
+        
         public Crupier getCrupierByAccessKey(string access_key)
         {
             command.CommandText = "SELECT * FROM crupiers WHERE access_key = @access_key; ";

@@ -16,6 +16,13 @@ namespace Roulette_ApiRest.Controllers
     [ApiController]
     public class RouletteController : ControllerBase
     {
+        // GET: api/<ValuesController>
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok("Roulette working correctly");
+        }
+
         // POST api/<RouletteController>/create
         [HttpPost("create")]
         public IActionResult CreateRoulette(string access_key)
@@ -88,8 +95,21 @@ namespace Roulette_ApiRest.Controllers
             BetRoulette rm = new BetRoulette();
             try
             {
-                rm.CloseRoulette(roulette_id: id_roulette, access_key: access_key);
-                return Ok(new { message = "The roulette wheel has been successfully closed" });
+                List<Bet> BetsRoulete =  rm.CloseRoulette(roulette_id: id_roulette, access_key: access_key);
+                return Ok(new { message = "The roulette wheel has been successfully closed", roulettes = BetsRoulete });
+            }
+            catch (Exception ex) { return ValidateExceptions(ex); }
+        }
+
+        // GET api/<RouletteController>/open
+        [HttpGet("list-roulettes")]
+        public IActionResult ListCreatedRoulettes()
+        {
+            BetRoulette rm = new BetRoulette();
+            try
+            {
+                List<Roulette> roulettes =  rm.ObtainRoulettes();
+                return Ok(new { roulettes = roulettes });
             }
             catch (Exception ex) { return ValidateExceptions(ex); }
         }
