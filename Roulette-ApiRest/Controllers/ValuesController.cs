@@ -23,8 +23,8 @@ namespace Roulette_ApiRest.Controllers
         {
             BetRoulette rm = new BetRoulette();
             DataDB db = new DataDB("ConnectionRoulette");
-            rm.CloseRoulette(1, "93d36591-b06b-47c8-99c0-105aa735025f");
-            Bet bet = new Bet();
+            //rm.CloseRoulette(1, "93d36591-b06b-47c8-99c0-105aa735025f");
+            //Bet bet = new Bet();
             //bet.id_roulette = 1;
             //bet.number = 10;
             //bet.color = Color_Enum.Black;

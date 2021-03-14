@@ -13,7 +13,7 @@ namespace Roulette_ApiRest.Data.Entities
         public DateTime open_date { get; set; }
         public DateTime? close_date { get; set; }
         public int? number_winner { get; set; }
-        public string? color_winner { get; set; }
+        public Color_Enum? color_winner { get; set; }
         public bool state { get; set; }
     }
 }
