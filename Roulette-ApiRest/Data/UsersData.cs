@@ -1,4 +1,5 @@
 ﻿using Roulette_ApiRest.Data.Entities;
+using Roulette_ApiRest.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,7 +31,7 @@ namespace Roulette_ApiRest.Data
             {
                 if (!crupiersResult.Any())
                 {
-                    throw new Exception("Crupier not found with the specified access key");
+                    throw new DataNotFoundException("Crupier not found with the specified access key");
                 }
             }
 
@@ -55,7 +56,7 @@ namespace Roulette_ApiRest.Data
             {
                 if (!gamblersResult.Any())
                 {
-                    throw new Exception("Gambler not found with the specified access key");
+                    throw new DataNotFoundException("Gambler not found with the specified access key");
                 }
             }
             return gamblersResult[0];

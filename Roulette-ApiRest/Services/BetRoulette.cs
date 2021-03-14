@@ -1,4 +1,5 @@
 ﻿using Roulette_ApiRest.Data.Entities;
+using Roulette_ApiRest.Exceptions;
 using Roulette_ApiRest.Models;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Roulette_ApiRest.Data
         {
             rouletes_db = new RouletesData(connection_name: "ConnectionRoulette");
             users_db = new UsersData(connection_name: "ConnectionRoulette");
+            bets_db = new BetsData(connection_name: "ConnectionRoulette");
         } // Constructor
 
         public List<Roulette> ObtainRoulettes() {
@@ -36,7 +38,7 @@ namespace Roulette_ApiRest.Data
             Crupier crupier = users_db.getCrupierByAccessKey(access_key: access_key);
             if (!crupier.state)
             {
-                throw new Exception("The operation could not be performed because the croupier is inactive.");
+                throw new ForbiddenAccessException("The operation could not be performed because the croupier is inactive.");
             }
             else
             {
@@ -51,11 +53,11 @@ namespace Roulette_ApiRest.Data
             Roulette Roulette = rouletes_db.getRouletteById(id: roulette_id);
             if (Roulette.id_crupier != crupier.id)
             {
-                throw new Exception("The operation could not be performed because the croupier is not assigned to this roulette");
+                throw new ForbiddenAccessException("The operation could not be performed because the croupier is not assigned to this roulette");
             }
             else if (Roulette.state)
             {
-                throw new Exception("The operation could not be performed because the roulette is already open");
+                throw new InvalidOperationException("The operation could not be performed because the roulette is already open");
             }
             else
             {
@@ -73,7 +75,7 @@ namespace Roulette_ApiRest.Data
             }
             else if (!Roulette.state)
             {
-                throw new Exception("The operation could not be performed because the roulette is closed");
+                throw new InvalidOperationException("The operation could not be performed because the roulette is closed");
 
             }
             else
@@ -88,26 +90,36 @@ namespace Roulette_ApiRest.Data
             Roulette Roulette = rouletes_db.getRouletteById(id: roulette_id);
             if (Roulette.id_crupier != crupier.id)
             {
-                throw new Exception("The operation could not be performed because the croupier is not assigned to this roulette");
+                throw new ForbiddenAccessException("The operation could not be performed because the croupier is not assigned to this roulette");
             }
             else if (!Roulette.state)
             {
-                throw new Exception("The operation could not be performed because the roulette is already closed");
+                throw new InvalidOperationException("The operation could not be performed because the roulette is already closed");
             }
             else
             {
                 rouletes_db.updateRouletteStatus(roulette_id: Roulette.id, state: false);
                 Roulette.close_date = DateTime.Now;
-                //Generate Number Roulette
+                updateResultsBets(Roulette: Roulette);
+            }
+        }
+
+        public void updateResultsBets(Roulette Roulette) 
+        {
+            try
+            {
                 Random rnd = new Random();
-                int random = rnd.Next(minValue: Bet.minNumber,maxValue: Bet.maxNumber);
+                int bet_result = rnd.Next(minValue: Bet.minNumber, maxValue: Bet.maxNumber);
                 bets_db.updateBetsWinner(roulette: Roulette, number_bet: 10, color_bet: Color_Enum.Red);
                 //Update Credit Gamblers for Bets
                 foreach (Winner_Enum winner in Enum.GetValues(typeof(Winner_Enum)))
                 {
-                    bets_db.addCreditResultBets(roulette_id: Roulette.id,result: winner);
+                    bets_db.addCreditResultBets(roulette_id: Roulette.id, result: winner);
                 }
-                
+            }
+            catch
+            {
+                throw new Exception("An error has occurred in the awarding of prizes to gamblers ");
             }
         }
     }

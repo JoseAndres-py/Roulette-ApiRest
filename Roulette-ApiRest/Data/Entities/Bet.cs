@@ -18,7 +18,7 @@ namespace Roulette_ApiRest.Data.Entities
         public int id_roulette { get; set; }
         public int id_gambler { get; set; }
         [Range(minNumber, maxNumber)]
-        public int number { get; set; }
+        public int? number { get; set; }
         public Color_Enum color { get; set; }
         [Range(0.1d, maximum: 10000)]
         public int money_bet { get; set; }

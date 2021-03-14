@@ -1,4 +1,5 @@
 ﻿using Roulette_ApiRest.Data.Entities;
+using Roulette_ApiRest.Exceptions;
 using Roulette_ApiRest.Models;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace Roulette_ApiRest.Data
             {
                 if (!roulettesResult.Any())
                 {
-                    throw new Exception("Roulete not found with the specified id");
+                    throw new DataNotFoundException("Roulete not found with the specified id");
                 }
             }
             return roulettesResult[0];
@@ -44,15 +45,17 @@ namespace Roulette_ApiRest.Data
             command.Parameters.Clear();
             command.Parameters.Add(parameterName:"@id_roulette", sqlDbType:SqlDbType.Int).Value = roulette.id;
             command.Parameters.Add(parameterName:"@id_gambler", sqlDbType: SqlDbType.Int).Value = gambler.id;
-            command.Parameters.Add(parameterName:"@number", sqlDbType: SqlDbType.Int).Value = bet.number;
             command.Parameters.Add(parameterName:"@color", sqlDbType: SqlDbType.NVarChar).Value = (int)bet.color;
             command.Parameters.Add(parameterName:"@money", sqlDbType: SqlDbType.Int).Value = bet.money_bet;
+            command.Parameters.Add(parameterName: "@number", sqlDbType: SqlDbType.Int).Value = DBNull.Value;
+            if (bet.number != null)
+                command.Parameters["@number"].Value = bet.number;
             try
             {
                 connection.Open();
                 command.ExecuteReader();
             }
-            catch
+            catch(Exception ex)
             {
                 throw new Exception("An error occurred when adding the bets to the database");
             }

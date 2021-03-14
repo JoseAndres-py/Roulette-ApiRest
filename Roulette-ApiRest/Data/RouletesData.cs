@@ -1,4 +1,5 @@
 ﻿using Roulette_ApiRest.Data.Entities;
+using Roulette_ApiRest.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,7 +33,7 @@ namespace Roulette_ApiRest.Data
             {
                 if (!roulettesResult.Any())
                 {
-                    throw new Exception("Roulete not found with the specified id");
+                    throw new DataNotFoundException("Roulete not found with the specified id");
                 }
             }
             return roulettesResult[0];
