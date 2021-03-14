@@ -21,12 +21,12 @@ namespace Roulette_ApiRest.Data
         public DataDB(string connection_name)
         {
             _configuration = GetConfigurationSettings();
-            createSqlConnection(connection_name);
+            createSqlConnection(name:connection_name);
         } // Constructor
 
-        private void createSqlConnection(string connection_name) {
+        private void createSqlConnection(string name) {
             connection = new SqlConnection();
-            connection.ConnectionString = _configuration.GetConnectionString(connection_name);
+            connection.ConnectionString = _configuration.GetConnectionString(name: name);
             createSqlCommand(CommandType.Text);
         }
 
@@ -46,7 +46,7 @@ namespace Roulette_ApiRest.Data
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    response.Add(sqlDataConvertion<obj>(reader));
+                    response.Add(sqlDataConvertion<obj>(reader:reader));
                 }
 
                 return response;
@@ -66,13 +66,13 @@ namespace Roulette_ApiRest.Data
                 if (valueDB != DBNull.Value)
                 {
                     Type type = Object.GetType();
-                    PropertyInfo prop = type.GetProperty(reader.GetName(inc));
+                    PropertyInfo prop = type.GetProperty(name:reader.GetName(inc));
                     // Nullable Data Type
                     Type propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
                     // Cast Enum Values Data Base
                     if (prop.PropertyType.IsEnum)
-                        valueDB = Enum.ToObject(prop.PropertyType, valueDB);
-                    prop.SetValue(Object, Convert.ChangeType(valueDB, propType), null);
+                        valueDB = Enum.ToObject(enumType:prop.PropertyType, value:valueDB);
+                    prop.SetValue(Object, Convert.ChangeType(value:valueDB, conversionType:propType), null);
                 }
             }
 
@@ -81,7 +81,7 @@ namespace Roulette_ApiRest.Data
         
         public IConfigurationRoot GetConfigurationSettings()
         {
-            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            var builder = new ConfigurationBuilder().SetBasePath(basePath:Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             return builder.Build();
         }
     }

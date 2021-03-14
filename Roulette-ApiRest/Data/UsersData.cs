@@ -16,7 +16,7 @@ namespace Roulette_ApiRest.Data
         {
             command.CommandText = "SELECT * FROM crupiers WHERE access_key = @access_key; ";
             command.Parameters.Clear();
-            command.Parameters.Add("@access_key", SqlDbType.VarChar).Value = access_key;
+            command.Parameters.Add(parameterName:"@access_key", sqlDbType:SqlDbType.VarChar).Value = access_key;
             List<Crupier> crupiersResult = new List<Crupier>();
             try
             {
@@ -41,7 +41,7 @@ namespace Roulette_ApiRest.Data
         {
             command.CommandText = "SELECT * FROM gamblers WHERE access_key = @access_key; ";
             command.Parameters.Clear();
-            command.Parameters.Add("@access_key", SqlDbType.VarChar).Value = access_key;
+            command.Parameters.Add(parameterName: "@access_key", sqlDbType:SqlDbType.VarChar).Value = access_key;
             List<Gambler> gamblersResult = new List<Gambler>();
             try
             {

@@ -18,7 +18,7 @@ namespace Roulette_ApiRest.Data
         {
             command.CommandText = "SELECT * FROM roulettes WHERE id = @id; ";
             command.Parameters.Clear();
-            command.Parameters.Add("@id", SqlDbType.Int).Value = id;
+            command.Parameters.Add(parameterName:"@id", sqlDbType:SqlDbType.Int).Value = id;
             List<Roulette> roulettesResult = new List<Roulette>();
             try
             {
@@ -58,7 +58,7 @@ namespace Roulette_ApiRest.Data
         {
             command.CommandText = "INSERT INTO roulettes (id_crupier, open_date, state) OUTPUT Inserted.id VALUES(@id_crupier, GETDATE(), CONVERT(bit, 1)); ";
             command.Parameters.Clear();
-            command.Parameters.Add("@id_crupier", SqlDbType.Int).Value = crupier_id;
+            command.Parameters.Add(parameterName:"@id_crupier", sqlDbType:SqlDbType.Int).Value = crupier_id;
             try
             {
                 Roulette newRoulette = Query<Roulette>()[0];
@@ -75,8 +75,8 @@ namespace Roulette_ApiRest.Data
         {
             command.CommandText = "UPDATE roulettes SET state = CONVERT(bit,@state), open_date = CASE WHEN @state = CONVERT(bit,'True') THEN GETDATE() ELSE open_date END, close_date = CASE WHEN @state = CONVERT(bit,'False') THEN GETDATE()  ELSE NULL END WHERE id = @id;";
             command.Parameters.Clear();
-            command.Parameters.Add("@id", SqlDbType.Int).Value = roulette_id;
-            command.Parameters.Add("@state", SqlDbType.Bit).Value = state;
+            command.Parameters.Add(parameterName:"@id", sqlDbType:SqlDbType.Int).Value = roulette_id;
+            command.Parameters.Add(parameterName:"@state", sqlDbType:SqlDbType.Bit).Value = state;
             try
             {
                 connection.Open();
@@ -92,8 +92,6 @@ namespace Roulette_ApiRest.Data
             }
 
         }
-
-
 
     }
 }

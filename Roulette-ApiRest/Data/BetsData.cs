@@ -18,7 +18,7 @@ namespace Roulette_ApiRest.Data
         {
             command.CommandText = "SELECT * FROM bets WHERE id = @id; ";
             command.Parameters.Clear();
-            command.Parameters.Add("@id", SqlDbType.Int).Value = id;
+            command.Parameters.Add(parameterName:"@id", sqlDbType:SqlDbType.Int).Value = id;
             List<Bet> roulettesResult = new List<Bet>();
             try
             {
@@ -42,11 +42,11 @@ namespace Roulette_ApiRest.Data
         {
             command.CommandText = "INSERT INTO bets ([id_roulette], [id_gambler], [number], [color], [money_bet], [date_bet])  OUTPUT Inserted.id VALUES(@id_roulette, @id_gambler, @number, @color, @money, GETDATE());";
             command.Parameters.Clear();
-            command.Parameters.Add("@id_roulette", SqlDbType.Int).Value = roulette.id;
-            command.Parameters.Add("@id_gambler", SqlDbType.Int).Value = gambler.id;
-            command.Parameters.Add("@number", SqlDbType.Int).Value = bet.number;
-            command.Parameters.Add("@color", SqlDbType.NVarChar).Value = (int)bet.color;
-            command.Parameters.Add("@money", SqlDbType.Int).Value = bet.money_bet;
+            command.Parameters.Add(parameterName:"@id_roulette", sqlDbType:SqlDbType.Int).Value = roulette.id;
+            command.Parameters.Add(parameterName:"@id_gambler", sqlDbType: SqlDbType.Int).Value = gambler.id;
+            command.Parameters.Add(parameterName:"@number", sqlDbType: SqlDbType.Int).Value = bet.number;
+            command.Parameters.Add(parameterName:"@color", sqlDbType: SqlDbType.NVarChar).Value = (int)bet.color;
+            command.Parameters.Add(parameterName:"@money", sqlDbType: SqlDbType.Int).Value = bet.money_bet;
             try
             {
                 connection.Open();
@@ -77,14 +77,14 @@ namespace Roulette_ApiRest.Data
                                     SET status_winner = @number_result
                                     WHERE number = @number AND id_roulette = @id_roulette AND date_bet BETWEEN @open_date AND @close_date;";
             command.Parameters.Clear();
-            command.Parameters.Add("@id_roulette", SqlDbType.Int).Value = roulette.id;
-            command.Parameters.Add("@number", SqlDbType.Int).Value = number_bet;
-            command.Parameters.Add("@color", SqlDbType.Int).Value = (int)color_bet;
-            command.Parameters.Add("@lose_result", SqlDbType.Int).Value = Winner_Enum.Lose;
-            command.Parameters.Add("@color_result", SqlDbType.Int).Value = Winner_Enum.Color;
-            command.Parameters.Add("@number_result", SqlDbType.Int).Value = Winner_Enum.Number;
-            command.Parameters.Add("@open_date", SqlDbType.DateTime).Value = roulette.open_date;
-            command.Parameters.Add("@close_date", SqlDbType.DateTime).Value = roulette.close_date;
+            command.Parameters.Add(parameterName:"@id_roulette", sqlDbType: SqlDbType.Int).Value = roulette.id;
+            command.Parameters.Add(parameterName:"@number", sqlDbType: SqlDbType.Int).Value = number_bet;
+            command.Parameters.Add(parameterName:"@color", sqlDbType: SqlDbType.Int).Value = (int)color_bet;
+            command.Parameters.Add(parameterName:"@lose_result", sqlDbType: SqlDbType.Int).Value = Winner_Enum.Lose;
+            command.Parameters.Add(parameterName:"@color_result", sqlDbType: SqlDbType.Int).Value = Winner_Enum.Color;
+            command.Parameters.Add(parameterName:"@number_result", sqlDbType: SqlDbType.Int).Value = Winner_Enum.Number;
+            command.Parameters.Add(parameterName:"@open_date", sqlDbType: SqlDbType.DateTime).Value = roulette.open_date;
+            command.Parameters.Add(parameterName:"@close_date", sqlDbType: SqlDbType.DateTime).Value = roulette.close_date;
             try
             {
                 connection.Open();
@@ -117,11 +117,11 @@ namespace Roulette_ApiRest.Data
                                     AND bets.status_winner = @status_winner
                                     GROUP BY bets.id_gambler) bets ON bets.id_gambler = gamblers.id";
             command.Parameters.Clear();
-            command.Parameters.Add("@id_roulette", SqlDbType.Int).Value = roulette_id;
-            command.Parameters.Add("@status_winner", SqlDbType.Int).Value = (int)result;
-            command.Parameters.Add("@lose_result", SqlDbType.Int).Value = (int)Winner_Enum.Lose;
-            command.Parameters.Add("@color_result", SqlDbType.Int).Value = (int)Winner_Enum.Color;
-            command.Parameters.Add("@number_result", SqlDbType.Int).Value = (int)Winner_Enum.Number;
+            command.Parameters.Add(parameterName:"@id_roulette", SqlDbType.Int).Value = roulette_id;
+            command.Parameters.Add(parameterName:"@status_winner", SqlDbType.Int).Value = (int)result;
+            command.Parameters.Add(parameterName:"@lose_result", SqlDbType.Int).Value = (int)Winner_Enum.Lose;
+            command.Parameters.Add(parameterName:"@color_result", SqlDbType.Int).Value = (int)Winner_Enum.Color;
+            command.Parameters.Add(parameterName:"@number_result", SqlDbType.Int).Value = (int)Winner_Enum.Number;
             try
             {
                 connection.Open();

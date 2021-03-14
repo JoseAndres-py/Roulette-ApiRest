@@ -16,9 +16,8 @@ namespace Roulette_ApiRest.Data
 
         public BetRoulette()
         {
-            db = new DataDB("ConnectionRoulette");
-            rouletes_db = new RouletesData("ConnectionRoulette");
-            users_db = new UsersData("ConnectionRoulette");
+            rouletes_db = new RouletesData(connection_name: "ConnectionRoulette");
+            users_db = new UsersData(connection_name: "ConnectionRoulette");
         } // Constructor
 
         public List<Roulette> ObtainRoulettes() {
@@ -34,22 +33,22 @@ namespace Roulette_ApiRest.Data
         }
         public int CreateRoulette(string access_key)
         {
-            Crupier crupier = users_db.getCrupierByAccessKey(access_key);
+            Crupier crupier = users_db.getCrupierByAccessKey(access_key: access_key);
             if (!crupier.state)
             {
                 throw new Exception("The operation could not be performed because the croupier is inactive.");
             }
             else
             {
-                Roulette roulete = rouletes_db.addRoulette(crupier.id);
+                Roulette roulete = rouletes_db.addRoulette(crupier_id: crupier.id);
                 return roulete.id;
             }
         }
 
         public void OpenRoulette(int roulette_id, string access_key)
         {
-            Crupier crupier = users_db.getCrupierByAccessKey(access_key);
-            Roulette Roulette = rouletes_db.getRouletteById(roulette_id);
+            Crupier crupier = users_db.getCrupierByAccessKey(access_key: access_key);
+            Roulette Roulette = rouletes_db.getRouletteById(id: roulette_id);
             if (Roulette.id_crupier != crupier.id)
             {
                 throw new Exception("The operation could not be performed because the croupier is not assigned to this roulette");
@@ -60,14 +59,14 @@ namespace Roulette_ApiRest.Data
             }
             else
             {
-                rouletes_db.updateRouletteStatus(roulette_id, true);
+                rouletes_db.updateRouletteStatus(roulette_id: roulette_id, state: true);
             }
         }
 
         public void CreateBet(string access_key, Bet Bet)
         {
-            Gambler Gambler = users_db.getGamblerByAccessKey(access_key);
-            Roulette Roulette = rouletes_db.getRouletteById(Bet.id_roulette);
+            Gambler Gambler = users_db.getGamblerByAccessKey(access_key: access_key);
+            Roulette Roulette = rouletes_db.getRouletteById(id: Bet.id_roulette);
             if (Bet.money_bet > Gambler.credit)
             {
                 throw new Exception("The operation could not be performed because the bambler has insufficient credit");
@@ -79,14 +78,14 @@ namespace Roulette_ApiRest.Data
             }
             else
             {
-                bets_db.addBet(Gambler, Roulette, Bet);
+                bets_db.addBet(gambler: Gambler, roulette: Roulette, bet: Bet);
             }
         }
 
         public void CloseRoulette(int roulette_id, string access_key)
         {
-            Crupier crupier = users_db.getCrupierByAccessKey(access_key);
-            Roulette Roulette = rouletes_db.getRouletteById(roulette_id);
+            Crupier crupier = users_db.getCrupierByAccessKey(access_key: access_key);
+            Roulette Roulette = rouletes_db.getRouletteById(id: roulette_id);
             if (Roulette.id_crupier != crupier.id)
             {
                 throw new Exception("The operation could not be performed because the croupier is not assigned to this roulette");
@@ -97,16 +96,16 @@ namespace Roulette_ApiRest.Data
             }
             else
             {
-                rouletes_db.updateRouletteStatus(Roulette.id, false);
+                rouletes_db.updateRouletteStatus(roulette_id: Roulette.id, state: false);
                 Roulette.close_date = DateTime.Now;
                 //Generate Number Roulette
                 Random rnd = new Random();
-                int random = rnd.Next(Bet.minNumber, Bet.maxNumber);
-                bets_db.updateBetsWinner(Roulette, 10, Color_Enum.Red);
+                int random = rnd.Next(minValue: Bet.minNumber,maxValue: Bet.maxNumber);
+                bets_db.updateBetsWinner(roulette: Roulette, number_bet: 10, color_bet: Color_Enum.Red);
                 //Update Credit Gamblers for Bets
                 foreach (Winner_Enum winner in Enum.GetValues(typeof(Winner_Enum)))
                 {
-                    bets_db.addCreditResultBets(Roulette.id, winner);
+                    bets_db.addCreditResultBets(roulette_id: Roulette.id,result: winner);
                 }
                 
             }
