@@ -14,7 +14,8 @@ Endpoint of list of created roulettes with their states (open or closed)
 
 
 ## Endpoints and Methods
-
+<p align="center">
+ 
 | Method| Endpoint|
 | ------------ | ------------ |
 | POST |api/roulette/create |
@@ -23,3 +24,26 @@ Endpoint of list of created roulettes with their states (open or closed)
 | POST |api/roulette/bet |
 | POST |api/roulette/close |
 | GET |api/roulette/list-roulettes|
+
+</p>
+
+For the invocation of the api services it would be done in the following way:
+
+  *Creation of roulette[PUT]: https://localhost:44302/api/roulette/create?access_key={access_key}
+
+  *Roulette activation [POST]: https://localhost:44302/api/roulette/open?access_key={access_key}f&id_roulette={id_roulette]
+
+  *Betting[PUT]: https://localhost:44302/api/roulette/bet?access_key={access_key}f&id_roulette={id_roulette]&number={number_bet}&color={color_bet}&money_bet={money_bet}
+
+  *Close roulette [POST]: https://localhost:44302/api/roulette/close?access_key={access_key}f&id_roulette={id_roulette]
+
+  *Roulette list[GET]: https://localhost:44302/api/roulette/list-roulettes
+
+The test ApiKeys are as follows:
+
+AccessKey Crupier: 
+  *Crupier Id 1 - 93d36591-b06b-47c8-99c0-105aa735025f
+  *Crupier Id 2 - 8d9fddd4-cb48-48d7-aefb-b5e2da815325
+AccessKey Gambler 1:  
+  *Gambler Id 1 - 60d71bfa-63f9-4b07-85e9-e9b22d828efe
+  *Gambler Id 2 - d3c62385-2b4e-449c-866a-6ade7358daa8
