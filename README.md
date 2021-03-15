@@ -29,21 +29,34 @@ Endpoint of list of created roulettes with their states (open or closed)
 
 For the invocation of the api services it would be done in the following way:
 
-  *Creation of roulette[PUT]: https://localhost:44302/api/roulette/create?access_key={access_key}
+  -Creation of roulette[PUT]: https://localhost:44302/api/roulette/create?access_key={access_key}
 
-  *Roulette activation [POST]: https://localhost:44302/api/roulette/open?access_key={access_key}f&id_roulette={id_roulette]
+  -Roulette activation [POST]: https://localhost:44302/api/roulette/open?access_key={access_key}&id_roulette={id_roulette]
 
-  *Betting[PUT]: https://localhost:44302/api/roulette/bet?access_key={access_key}f&id_roulette={id_roulette]&number={number_bet}&color={color_bet}&money_bet={money_bet}
+  -Betting[PUT]: https://localhost:44302/api/roulette/bet?access_key={access_key}&id_roulette={id_roulette]&number={number_bet}&color={color_bet}&money_bet={money_bet}
 
-  *Close roulette [POST]: https://localhost:44302/api/roulette/close?access_key={access_key}f&id_roulette={id_roulette]
+  -Close roulette [POST]: https://localhost:44302/api/roulette/close?access_key={access_key}&id_roulette={id_roulette]
 
-  *Roulette list[GET]: https://localhost:44302/api/roulette/list-roulettes
+  -Roulette list[GET]: https://localhost:44302/api/roulette/list-roulettes
 
 The test ApiKeys are as follows:
 
 AccessKey Crupier: 
-  *Crupier Id 1 - 93d36591-b06b-47c8-99c0-105aa735025f
-  *Crupier Id 2 - 8d9fddd4-cb48-48d7-aefb-b5e2da815325
+  -Crupier Id 1 - 93d36591-b06b-47c8-99c0-105aa735025f
+  -Crupier Id 2 - 8d9fddd4-cb48-48d7-aefb-b5e2da815325
 AccessKey Gambler 1:  
-  *Gambler Id 1 - 60d71bfa-63f9-4b07-85e9-e9b22d828efe
-  *Gambler Id 2 - d3c62385-2b4e-449c-866a-6ade7358daa8
+  -Gambler Id 1 - 60d71bfa-63f9-4b07-85e9-e9b22d828efe
+  -Gambler Id 2 - d3c62385-2b4e-449c-866a-6ade7358daa8
+
+
+## Quick Test Endpoints
+
+-Creation of roulette[PUT]: https://localhost:44302/api/roulette/create?access_key=8d9fddd4-cb48-48d7-aefb-b5e2da815325
+
+  -Roulette activation [POST]: https://localhost:44302/api/roulette/open?access_key=8d9fddd4-cb48-48d7-aefb-b5e2da815325&id_roulette=1
+
+  -Betting[PUT]: https://localhost:44302/api/roulette/bet?access_key=60d71bfa-63f9-4b07-85e9-e9b22d828efe&id_roulette=1&number=11&money_bet=100
+
+  -Close roulette [POST]: https://localhost:44302/api/roulette/close?access_key=93d36591-b06b-47c8-99c0-105aa735025f&id_roulette=1
+
+  -Roulette list[GET]: https://localhost:44302/api/roulette/list-roulettes
