@@ -24,7 +24,7 @@ namespace Roulette_ApiRest.Controllers
         }
 
         // POST api/<RouletteController>/create
-        [HttpPost("create")]
+        [HttpPut("create")]
         public IActionResult CreateRoulette(string access_key)
         {
             if (access_key == null) 
@@ -58,7 +58,7 @@ namespace Roulette_ApiRest.Controllers
         }
 
         // POST api/<RouletteController>/open
-        [HttpPost("bet")]
+        [HttpPut("bet")]
         public IActionResult BetRouletteOpen(string access_key, int id_roulette, Color_Enum color, int money_bet, int? number = null)
         {
             if (access_key == null || id_roulette == 0 || money_bet == 0 )

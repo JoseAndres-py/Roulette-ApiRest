@@ -98,9 +98,9 @@ namespace Roulette_ApiRest.Data
             }
             else
             {
-                //rouletes_db.updateRouletteStatus(roulette_id: Roulette.id, state: false);
+                rouletes_db.updateRouletteStatus(roulette_id: Roulette.id, state: false);
                 Roulette.close_date = DateTime.Now;
-                //updateResultsBets(Roulette: Roulette);
+                updateResultsBets(Roulette: Roulette);
                 return bets_db.getBetsByRoulette(Roulette);
             }
         }
